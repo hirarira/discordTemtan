@@ -60,7 +60,7 @@
 				'お前も消してやろうか？',
 				'まだ起きてて大丈夫なの？'
 			];
-			let rnd = Math.floor( Math.random() * 14 );
+			let rnd = Math.floor( Math.random() * WordList.length );
 			ohanashiFlag = true;
 			targetUser = message.author.id;
 			message.channel.send(WordList[rnd]);
