@@ -16,6 +16,26 @@
 	let ohanashiFlag = false;
 	let targetUser = null;
 
+	// PromiseでHTTPリクエストを実施する。
+	function getRequest(getURL){
+		let request = require('request');
+		return new Promise((resolve,reject) => {
+			request(getURL, function (error, response, body) {
+			if(!error && response.statusCode == 200){
+					resolve(body);
+				}
+				else{
+					reject(null);
+				}
+			});
+		});
+	}
+
+	// Open Weather API より天気情報を取得
+	function getWeather(city_name){
+		const url = "";
+	}
+
 	// メッセージ送信関数
 	function send_message(message, rep_mes){
 		message.reply(rep_mes)
