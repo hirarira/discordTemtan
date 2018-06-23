@@ -14,6 +14,7 @@
 	// 雑多なフラグ処理
 	let jankenFlag = false;
 	let ohanashiFlag = false;
+	let isTenkiFlag = false;
 	let targetUser = null;
 
 	// PromiseでHTTPリクエストを実施する。
@@ -25,7 +26,7 @@
 					resolve(body);
 				}
 				else{
-					reject(null);
+					reject(body);
 				}
 			});
 		});
@@ -33,7 +34,22 @@
 
 	// Open Weather API より天気情報を取得
 	function getWeather(city_name){
-		const url = "";
+		return new Promise((resolve, reject)=>{
+			const host = "http://api.openweathermap.org/data/2.5/weather";
+			const weatherToken = process.env.OPEN_WEATHER_MAP;
+			// 環境変数が取得できるかの判定
+			if(typeof weatherToken === 'undefined'){
+				reject("token:OPEN_WEATHER_MAP is undefined");
+			}
+			let url = host + "?q=" + city_name + "&APPID=" + weatherToken;
+			getRequest(url)
+			.then((res)=>{
+				resolve(res);
+			})
+			.catch((e)=>{
+				reject(e);
+			});
+		});
 	}
 
 	// メッセージ送信関数
@@ -98,18 +114,18 @@
 		}
 		else if(message.content.indexOf("help") > -1 ){
 			let rep_mes = "わたしが反応する言葉を紹介するね！\n"
-				+"```・おはなし\n"
-				+"お兄ちゃんたちにわたしが色々質問するよ！```\n\n"
-				+"```・じゃんけん\n"
-				+"そのまんんまだけど、私とじゃんけんをして遊べるよ！```\n\n"
-				message.channel.send(rep_mes);
+			+"```・おはなし\n"
+			+"お兄ちゃんたちにわたしが色々質問するよ！```\n\n"
+			+"```・じゃんけん\n"
+			+"そのまんんまだけど、私とじゃんけんをして遊べるよ！```\n\n"
+			message.channel.send(rep_mes);
 		}
 		// じゃんけん開始
 		else if(message.content.match(/(じゃんけん)|(ジャンケン)/)){
 			let rep_mes = "じゃんけんしよう！じゃじゃじゃじゃーんけーん\n";
-				jankenFlag = true;
-				targetUser = message.author.id;
-				message.channel.send(rep_mes);
+			jankenFlag = true;
+			targetUser = message.author.id;
+			message.channel.send(rep_mes);
 		}
 		// じゃんけんをする。
 		else if(jankenFlag && targetUser === message.author.id){
@@ -153,6 +169,45 @@
 				}
 			}
 			message.channel.send(rep_mes);
+		}
+		// test
+		else if(message.content.indexOf("天気") > -1 ){
+			isTenkiFlag = true;
+			targetUser = message.author.id;
+			message.reply("どこの天気を知りたい？");
+		}
+		// 天気を返す
+		else if(isTenkiFlag && targetUser === message.author.id){
+			getWeather(message.content)
+			.then((res)=>{
+				let res_str = "```";
+				res_str += res;
+				res_str += "```";
+				message.reply(res_str);
+			})
+			.catch((e)=>{
+				let res_str = "```";
+				res_str += e;
+				res_str += "```";
+				message.reply(res_str);
+			});
+			isTenkiFlag = false;
+			targetUser = null;
+		}
+		// test
+		else if(message.content.indexOf("get data") > -1 ){
+			let out_str = "```";
+			out_str += "user:"+message.author+"\n";
+			out_str += "user id:"+message.author.id+"\n";
+			out_str += "user name:"+message.author.username+"\n";
+			out_str += "server id:"+message.guild.id+"\n";
+			out_str += "server name:"+message.guild.name+"\n";
+			out_str += "server total member:"+message.guild.memberCount+"\n";
+			out_str += "channel name:"+message.channel.name+"\n";
+			out_str += "channel calculatedPosition:"+message.channel.calculatedPosition+"\n";
+			out_str += "```";
+			message.channel.send(out_str);
+			message.reply("リプテスト");
 		}
 	});
 

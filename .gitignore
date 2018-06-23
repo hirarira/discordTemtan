@@ -1,4 +1,5 @@
 node_modules/
 sankou/
 start_temtan.sh
+openWeatherMapTest.sh
 package-lock.json
