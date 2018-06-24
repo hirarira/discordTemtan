@@ -1,20 +1,20 @@
 module.exports = class Minesweepe{
   constructor(){
     this.mojiNum = {
-  		0: ":zero:",
-  		1: ":one:",
-  		2: ":two:",
-  		3: ":three:",
-  		4: ":four:",
-  		5: ":five:",
-  		6: ":six:",
-  		7: ":seven:",
-  		8: ":eight:",
-  		9: ":nine:",
-  		"*": ":boom:",
+      0: ":zero:",
+      1: ":one:",
+      2: ":two:",
+      3: ":three:",
+      4: ":four:",
+      5: ":five:",
+      6: ":six:",
+      7: ":seven:",
+      8: ":eight:",
+      9: ":nine:",
+      "*": ":boom:",
       "b": ":bomb:",
       "?": ":question:"
-  	};
+    };
     this.boardSize = 10;
     this.board = [];
     this.openBoard = [];
@@ -53,11 +53,11 @@ module.exports = class Minesweepe{
     // 爆弾セット
     for(let i=0; i<this.bomb_num; i++){
       let x,y;
-			do{
-				x = Math.floor( Math.random() * this.boardSize );
-				y = Math.floor( Math.random() * this.boardSize );
-			}while(this.board[x][y]);
-			this.board[x][y] = true;
+      do{
+        x = Math.floor( Math.random() * this.boardSize );
+        y = Math.floor( Math.random() * this.boardSize );
+      }while(this.board[x][y]);
+      this.board[x][y] = true;
     }
 
     // 周辺状態設定
@@ -98,12 +98,12 @@ module.exports = class Minesweepe{
       return "ゲームのプレイ中ではありません！start_game()で初期化をしてください！";
     }
     if(x >= 0 && (x < this.boardSize) &&
-				y >= 0 && (y < this.boardSize) ){
+        y >= 0 && (y < this.boardSize) ){
           if(this.board[x][y]){
             this.playing　= false;
             this.openBoard[x][y] = true;
-    				return "あっ！爆弾ふんじゃいました！ゲームオーバーです！";
-    			}
+            return "あっ！爆弾ふんじゃいました！ゲームオーバーです！";
+          }
           else if(this.openBoard[x][y]){
             return "すでにそのマスは開いています。";
           }
