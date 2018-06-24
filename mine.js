@@ -108,7 +108,6 @@ module.exports = class Minesweepe{
             return "すでにそのマスは開いています。";
           }
           else{
-            this.open_num++;
             this.round_open(x, y);
             let nokori = Math.pow(this.boardSize, 2) - (this.open_num + this.bomb_num);
             if(nokori <= 0){
