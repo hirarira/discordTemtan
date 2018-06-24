@@ -60,8 +60,40 @@ module.exports = class openWeatherMap{
 			803: "壊れた雲",
 			804: "曇った雲"
 		}
-		this.sunrise = null;
-		this.sunset = null;
+		this.jpCityList = {
+			"東京": 1850147,
+			"大阪": 1853909,
+			"横浜": 1848354,
+			"名古屋": 1856057,
+			"札幌": 2128295,
+			"福岡": 1863967,
+			"京都": 1857910,
+			"さいたま": 6940394,
+			"広島": 1862415,
+			"仙台": 2111149,
+			"堺": 1853195,
+			"新潟": 1855431,
+			"浜松": 1863289,
+			"熊本": 1858421,
+			"岡山": 1854383,
+			"静岡": 1851717,
+			"熊本": 1858421,
+			"函館": 2130188,
+			"旭川": 2130629,
+			"青森": 2130658,
+			"八戸": 2130204,
+			"盛岡": 2111834,
+			"秋田": 2113126,
+			"福島": 2112923,
+			"いわき": 2112539,
+			"宇都宮": 1849053,
+			"前橋": 1857843,
+			"高崎": 1851002,
+			"川越": 1859740,
+			"川口": 1859730,
+			"所沢": 1850181
+		}
+		this.cityWeather = [];
 	}
 	// PromiseでHTTPリクエストを実施する。
 	getRequest(getURL){
@@ -79,41 +111,50 @@ module.exports = class openWeatherMap{
 	}
 
 	// Open Weather API より天気情報を取得
-	getWeather(city_name, city_jpn_name){
-		this.city_jpn_name = city_jpn_name;
+	getWeather(city_name){
 		return new Promise((resolve, reject)=>{
+			this.cityWeather[city_name] = {};
+			this.cityWeather[city_name].city_name = city_name;
 			const host = "http://api.openweathermap.org/data/2.5/weather";
-			let url = host + "?q=" + city_name + "&units=metric" + "&APPID=" + this.token;
+			let url = "";
+			this.cityWeather[city_name].city_code = this.jpCityList[city_name];
+			if(typeof this.cityWeather[city_name].city_code === "undefined"){
+				url = host + "?q=" + city_name + ",jp&units=metric" + "&APPID=" + this.token;
+			}
+			else{
+				url = host + "?id=" + this.cityWeather[city_name].city_code + "&units=metric" + "&APPID=" + this.token;
+			}
 			this.getRequest(url)
 			.then((res)=>{
-				this.weatherData = JSON.parse(res);
-				this.sunrise = new Date( this.weatherData.sys.sunrise * 1000 );
-				this.sunset = new Date( this.weatherData.sys.sunset * 1000 );
-				resolve(this.weatherData);
+				this.cityWeather[city_name].weatherData = JSON.parse(res);
+				this.cityWeather[city_name].sunrise = new Date( this.cityWeather[city_name].weatherData.sys.sunrise * 1000 );
+				this.cityWeather[city_name].sunset = new Date( this.cityWeather[city_name].weatherData.sys.sunset * 1000 );
+				resolve(city_name);
 			})
 			.catch((e)=>{
-				reject(e);
+				reject( JSON.parse(e) );
 			});
 		});
 	}
 
 	// 天気情報を見やすい日本語形式で返す
-	getWeatherJapanese(){
-		if(typeof this.weatherData === 'undefined'){
+	getWeatherJapanese(city_name){
+		let nowCity = this.cityWeather[city_name];
+		if(typeof nowCity === 'undefined' || typeof nowCity.weatherData === 'undefined'){
 			return null;
 		}
-		let weatherJPN = "今日の" + this.city_jpn_name + "の天気は";
-		for(let i=0;i<this.weatherData.weather.length;i++){
-			weatherJPN += this.weatherDisc[ this.weatherData.weather[i].id ];
-			if(i < this.weatherData.weather.length - 1){
+		let weatherJPN = "今日の" + nowCity.city_name + "の天気は";
+		for(let i=0;i<nowCity.weatherData.weather.length;i++){
+			weatherJPN += this.weatherDisc[ nowCity.weatherData.weather[i].id ];
+			if(i < nowCity.weatherData.weather.length - 1){
 				weatherJPN += " かつ ";
 			}
 		}
 		weatherJPN += " です。\n";
-		weatherJPN += "現在の気温は" + this.weatherData.main.temp + "℃で、" +
-		"湿度は" + this.weatherData.main.humidity + "%です。\n" +
-		"日の出は" + this.sunrise.getHours() + "時" + this.sunrise.getMinutes() + "分 " +
-		"日の入りは" + this.sunset.getHours() + "時" + this.sunset.getMinutes() + "分です。";
+		weatherJPN += "現在の気温は" + nowCity.weatherData.main.temp + "℃で、" +
+		"湿度は" + nowCity.weatherData.main.humidity + "%です。\n" +
+		"日の出は" + nowCity.sunrise.getHours() + "時" + nowCity.sunrise.getMinutes() + "分 " +
+		"日の入りは" + nowCity.sunset.getHours() + "時" + nowCity.sunset.getMinutes() + "分です。";
 		return weatherJPN;
 	}
 }

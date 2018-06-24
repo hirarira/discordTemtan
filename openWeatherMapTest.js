@@ -12,14 +12,18 @@ if(typeof token === 'undefined'){
 	return;
 }
 
-openWeatherMap.getWeather("tokyo","東京")
+openWeatherMap.getWeather("東京")
 .then((res)=>{
-	console.log(res);
-	console.log(openWeatherMap.getWeatherJapanese());
+	console.log(openWeatherMap.getWeatherJapanese(res));
+	return openWeatherMap.getWeather("kanazawa");
+})
+.then((res)=>{
+	console.log(openWeatherMap.getWeatherJapanese(res));
+	return openWeatherMap.getWeather("unko");
+})
+.then((res)=>{
+	console.log(openWeatherMap.getWeatherJapanese(res));
 })
 .catch((e)=>{
 	console.log(e);
 });
-
-let res = openWeatherMap.getWeatherJapanese();
-console.log(res);

@@ -1,13 +1,28 @@
 (()=>{
 	"use strict"
 	const Discord = require('discord.js');
+	const OpenWeatherMap = require('./openWeatherMap.js');
+	const Mine = require("./mine.js");
+
 	const client = new Discord.Client();
 
 	// tokenを環境変数から取得
 	const token = process.env.TEMTAN_TOKEN;
 
+	// openWeatherMap
+	const openWeatherMapToken = process.env.OPEN_WEATHER_MAP;
+	let openWeatherMap = new OpenWeatherMap(openWeatherMapToken);
+
+	// Minesweepe
+	const mine = new Mine();
+
 	// 環境変数が取得できるかの判定
 	if(typeof token === 'undefined'){
+		console.log("discordのtokenを指定してください");
+		return;
+	}
+	if(typeof openWeatherMapToken === 'undefined'){
+		console.log("openWeatherMapのtokenを指定してください");
 		return;
 	}
 
@@ -28,26 +43,6 @@
 				else{
 					reject(body);
 				}
-			});
-		});
-	}
-
-	// Open Weather API より天気情報を取得
-	function getWeather(city_name){
-		return new Promise((resolve, reject)=>{
-			const host = "http://api.openweathermap.org/data/2.5/weather";
-			const weatherToken = process.env.OPEN_WEATHER_MAP;
-			// 環境変数が取得できるかの判定
-			if(typeof weatherToken === 'undefined'){
-				reject("token:OPEN_WEATHER_MAP is undefined");
-			}
-			let url = host + "?q=" + city_name + "&APPID=" + weatherToken;
-			getRequest(url)
-			.then((res)=>{
-				resolve(res);
-			})
-			.catch((e)=>{
-				reject(e);
 			});
 		});
 	}
@@ -170,7 +165,7 @@
 			}
 			message.channel.send(rep_mes);
 		}
-		// test
+		// 天気
 		else if(message.content.indexOf("天気") > -1 ){
 			isTenkiFlag = true;
 			targetUser = message.author.id;
@@ -178,21 +173,52 @@
 		}
 		// 天気を返す
 		else if(isTenkiFlag && targetUser === message.author.id){
-			getWeather(message.content)
+			openWeatherMap.getWeather(message.content)
 			.then((res)=>{
-				let res_str = "```";
-				res_str += res;
-				res_str += "```";
-				message.reply(res_str);
+				message.reply( openWeatherMap.getWeatherJapanese(res) );
 			})
 			.catch((e)=>{
-				let res_str = "```";
-				res_str += e;
-				res_str += "```";
-				message.reply(res_str);
+				let meg = "";
+				switch (e.cod) {
+					case "401":
+						meg = "tokenがおかしいよお・・・";
+						break;
+					case "404":
+						meg = "そんな街無いみたいだよ・・・お兄ちゃん・・・";
+						break;
+					default:
+						meg = "予期せぬエラーが発生したよ！お兄ちゃん！";
+						break;
+				}
+				message.reply( meg );
 			});
 			isTenkiFlag = false;
 			targetUser = null;
+		}
+		// マインスイーパ
+		else if(message.content.indexOf("mine") > -1 ){
+			let mine_cmd = message.content.split(" ");
+			if(mine_cmd[1] === "show"){
+				let out_str = "```" + JSON.stringify(mine) + "```";
+				message.channel.send(out_str);
+			}
+			else if(mine_cmd[1] === "reset"){
+				let set_num = Number(mine_cmd[2]);
+				let msg = "強制リセットをかけます！\n";
+				msg += mine.start_game(set_num);
+				message.channel.send(msg);
+			}
+			else if(!mine.playing){
+				let set_num = Number(mine_cmd[1]);
+				let msg = mine.start_game(set_num);
+				message.channel.send(msg);
+			}
+			else{
+				let now_msg = mine.open_board(mine_cmd[1], mine_cmd[2]);
+				let board_status = mine.show_board_discord();
+				let out_str = board_status + "\n" + now_msg;
+				message.channel.send(out_str);
+			}
 		}
 		// test
 		else if(message.content.indexOf("get data") > -1 ){
