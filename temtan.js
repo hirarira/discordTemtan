@@ -3,6 +3,7 @@
   const Discord = require('discord.js');
   const OpenWeatherMap = require('./lib/openWeatherMap.js');
   const Mine = require("./lib/mine.js");
+  const BlackJack = require("./lib/blackjack.js");
 
   const client = new Discord.Client();
 
@@ -15,6 +16,9 @@
 
   // Minesweepe
   const mine = new Mine();
+
+  // blackjack
+  const blackjack = new BlackJack(true);
 
   // 環境変数が取得できるかの判定
   if(typeof token === 'undefined'){
@@ -217,6 +221,60 @@
         let now_msg = mine.open_board(mine_cmd[1], mine_cmd[2]);
         let board_status = mine.show_board_discord();
         let out_str = board_status + "\n" + now_msg;
+        message.channel.send(out_str);
+      }
+    }
+    // BlackJack
+    else if (message.content.match(/(bj)|(blackjack)/)){
+      let bj_cmd = message.content.split(" ");
+      if(bj_cmd.length > 1){
+        bj_cmd = bj_cmd[1];
+        let out_str = '';
+        switch (bj_cmd) {
+          case 'start':
+            if(blackjack.end){
+              blackjack.init();
+              while(blackjack.end){
+                out_str += blackjack.end_show();
+                blackjack.init();
+              }
+              out_str += blackjack.show_status();
+              out_str += "\nヒットしますか？ y/n";
+            }
+            else{
+              out_str = "ゲームはすでに始まってますよー\n";
+            }
+            break;
+          case 'status':
+            out_str = blackjack.show_status();
+            out_str += "\nヒットしますか？ y/n";
+            break;
+          case 'y':
+          case 'yes':
+          case 'n':
+          case 'no':
+            if(!blackjack.end){
+              let is_hit = (bj_cmd === 'y' ||bj_cmd === 'yes');
+              blackjack.hit_player(is_hit);
+              if(blackjack.end){
+                out_str += blackjack.end_show();
+              }
+              else{
+                out_str += blackjack.show_status();
+                out_str += "\nヒットしますか？ y/n";
+              }
+            }
+            else{
+              out_str = "ゲームは開始されてません！\n";
+            }
+            break;
+          default:
+            out_str = "BlackJackの正しいコマンドではありませんよー\n" +
+              "bj start: ゲームを開始\n";
+              "bj status: ゲームの状況を表示\n";
+              "bj y/n: hitするかどうかを選択\n";
+            break;
+        }
         message.channel.send(out_str);
       }
     }
