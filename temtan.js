@@ -1,8 +1,8 @@
 (()=>{
   "use strict"
   const Discord = require('discord.js');
-  const OpenWeatherMap = require('./openWeatherMap.js');
-  const Mine = require("./mine.js");
+  const OpenWeatherMap = require('./lib/openWeatherMap.js');
+  const Mine = require("./lib/mine.js");
 
   const client = new Discord.Client();
 
