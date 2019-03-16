@@ -71,10 +71,9 @@
     if(message.author.id === client.user.id){
       return;
     }
-    let user_name = message.author.username;
     if(message.content.match(/こんに?ちは/)){
-      let rep_mes = "こんにちは！"+user_name+"おにいちゃん！";
-      message.channel.send(rep_mes);
+      let res = temtan.hello(message.author.username);
+      message.channel.send(res);
     }
     else if(message.content === "おはなし"){
       let res = temtan.ohanashi(message.author.id);
@@ -86,16 +85,12 @@
       message.channel.send(res);
     }
     else if(message.content.indexOf("テムたん") > -1 ){
-      let rep_mes = "なーに？わたしのこと呼んだー？";
-      message.channel.send(rep_mes);
+      let res = temtan.temtan_call();
+      message.channel.send(res);
     }
     else if(message.content.indexOf("help") > -1 ){
-      let rep_mes = "わたしが反応する言葉を紹介するね！\n"
-      +"```・おはなし\n"
-      +"お兄ちゃんたちにわたしが色々質問するよ！```\n\n"
-      +"```・じゃんけん\n"
-      +"そのまんんまだけど、私とじゃんけんをして遊べるよ！```\n\n"
-      message.channel.send(rep_mes);
+      let res = temtan.temtan_help();
+      message.channel.send(res);
     }
     // じゃんけん開始
     else if(message.content.match(/(じゃんけん)|(ジャンケン)/)){
