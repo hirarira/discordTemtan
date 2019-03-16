@@ -2,7 +2,8 @@ node_modules/
 sankou/
 city_list/
 start_temtan.sh
-openWeatherMapTest.sh
+start_temtan_debug.sh
+./lib/debug/openWeatherMapTest.sh
 debug_temtan.sh
 package-lock.json
 nohup.out
