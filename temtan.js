@@ -49,17 +49,6 @@
     });
   }
 
-  // メッセージ送信関数
-  function send_message(message, rep_mes){
-    message.reply(rep_mes)
-    .then((rep_res)=>{
-      console.log("リプを送りました："+rep_mes);
-    })
-    .catch((e)=>{
-      console.log(e);
-    });
-  }
-
   // 待受画面
   client.on('ready', ()=>{
     console.log("ログインしました。");
