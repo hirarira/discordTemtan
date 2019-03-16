@@ -4,22 +4,12 @@
   const OpenWeatherMap = require('./lib/openWeatherMap.js');
   const Mine = require("./lib/mine.js");
   const BlackJack = require("./lib/blackjack.js");
+  const Temtan = require("./lib/temtanbot.js");
 
   const client = new Discord.Client();
 
   // tokenを環境変数から取得
   const token = process.env.TEMTAN_TOKEN;
-  
-  // Temtan
-  class Temtan{
-    constructor(){
-      // 雑多なフラグ処理
-      this.jankenFlag = false;
-      this.ohanashiFlag = false;
-      this.isTenkiFlag = false;
-      this.targetUser = null;
-    }
-  }
 
   // openWeatherMap
   const openWeatherMapToken = process.env.OPEN_WEATHER_MAP;
