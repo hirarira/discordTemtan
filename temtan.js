@@ -9,6 +9,17 @@
 
   // tokenを環境変数から取得
   const token = process.env.TEMTAN_TOKEN;
+  
+  // Temtan
+  class Temtan{
+    constructor(){
+      // 雑多なフラグ処理
+      this.jankenFlag = false;
+      this.ohanashiFlag = false;
+      this.isTenkiFlag = false;
+      this.targetUser = null;
+    }
+  }
 
   // openWeatherMap
   const openWeatherMapToken = process.env.OPEN_WEATHER_MAP;
@@ -20,6 +31,9 @@
   // blackjack
   const blackjack = new BlackJack(true);
 
+  // Temtan
+  const temtan = new Temtan();
+
   // 環境変数が取得できるかの判定
   if(typeof token === 'undefined'){
     console.log("discordのtokenを指定してください");
@@ -29,12 +43,6 @@
     console.log("openWeatherMapのtokenを指定してください");
     return;
   }
-
-  // 雑多なフラグ処理
-  let jankenFlag = false;
-  let ohanashiFlag = false;
-  let isTenkiFlag = false;
-  let targetUser = null;
 
   // PromiseでHTTPリクエストを実施する。
   function getRequest(getURL){
@@ -96,15 +104,15 @@
         'まだ起きてて大丈夫なの？'
       ];
       let rnd = Math.floor( Math.random() * WordList.length );
-      ohanashiFlag = true;
-      targetUser = message.author.id;
+      temtan.ohanashiFlag = true;
+      temtan.targetUser = message.author.id;
       message.channel.send(WordList[rnd]);
     }
     // 相槌を返す
-    else if(ohanashiFlag && targetUser === message.author.id){
+    else if(temtan.ohanashiFlag && temtan.targetUser === message.author.id){
       let rep_mes = "へぇ〜そうなんだ！";
-      ohanashiFlag = false;
-      targetUser = null;
+      temtan.ohanashiFlag = false;
+      temtan.targetUser = null;
       message.channel.send(rep_mes);
     }
     else if(message.content.indexOf("テムたん") > -1 ){
@@ -122,16 +130,16 @@
     // じゃんけん開始
     else if(message.content.match(/(じゃんけん)|(ジャンケン)/)){
       let rep_mes = "じゃんけんしよう！じゃじゃじゃじゃーんけーん\n";
-      jankenFlag = true;
-      targetUser = message.author.id;
+      temtan.jankenFlag = true;
+      temtan.targetUser = message.author.id;
       message.channel.send(rep_mes);
     }
     // じゃんけんをする。
-    else if(jankenFlag && targetUser === message.author.id){
+    else if(temtan.jankenFlag && temtan.targetUser === message.author.id){
       const hands = [":fist:",":v:",":hand_splayed:"];
       // フラグ初期化
-      jankenFlag = false;
-      targetUser = null;
+      temtan.jankenFlag = false;
+      temtan.targetUser = null;
       // 手を決める
       let tem_hand = Math.floor( Math.random() * 3);
       let player_hand = -1;
@@ -171,12 +179,12 @@
     }
     // 天気
     else if(message.content.indexOf("天気") > -1 ){
-      isTenkiFlag = true;
-      targetUser = message.author.id;
+      temtan.isTenkiFlag = true;
+      temtan.targetUser = message.author.id;
       message.reply("どこの天気を知りたい？");
     }
     // 天気を返す
-    else if(isTenkiFlag && targetUser === message.author.id){
+    else if(temtan.isTenkiFlag && temtan.targetUser === message.author.id){
       openWeatherMap.getWeather(message.content)
       .then((res)=>{
         message.reply( openWeatherMap.getWeatherJapanese(res) );
@@ -196,8 +204,8 @@
         }
         message.reply( meg );
       });
-      isTenkiFlag = false;
-      targetUser = null;
+      temtan.isTenkiFlag = false;
+      temtan.targetUser = null;
     }
     // マインスイーパ
     else if(message.content.indexOf("mine") > -1 ){
