@@ -94,53 +94,13 @@
     }
     // じゃんけん開始
     else if(message.content.match(/(じゃんけん)|(ジャンケン)/)){
-      let rep_mes = "じゃんけんしよう！じゃじゃじゃじゃーんけーん\n";
-      temtan.jankenFlag = true;
-      temtan.targetUser = message.author.id;
-      message.channel.send(rep_mes);
+      let res = temtan.janken_start(message.author.id);
+      message.channel.send(res);
     }
     // じゃんけんをする。
     else if(temtan.jankenFlag && temtan.targetUser === message.author.id){
-      const hands = [":fist:",":v:",":hand_splayed:"];
-      // フラグ初期化
-      temtan.jankenFlag = false;
-      temtan.targetUser = null;
-      // 手を決める
-      let tem_hand = Math.floor( Math.random() * 3);
-      let player_hand = -1;
-      if( message.content.match(/ぐー|グー|:punch:|:fist:|rock/)){
-        player_hand = 0;
-      }
-      else if(message.content.match(/ちょき|チョキ|:v:|paper/)){
-        player_hand = 1;
-      }
-      else if(message.content.match(/ぱー|パー|scissors|:hand_splayed:/)){
-        player_hand = 2;
-      }
-      let rep_mes;
-      // まともな手を出してなかったら終了
-      if(player_hand === -1){
-        rep_mes  = "…ってお兄ちゃん！真面目にやってよ！もー！！\n";
-      }
-      else{
-        let winJudge = (player_hand - tem_hand + 3) % 3;
-        rep_mes = hands[tem_hand] + "\n";
-        switch (winJudge) {
-          case 0:
-            rep_mes += "ってあいこだね！またやろうねお兄ちゃん！\n";
-            break;
-          case 1:
-            rep_mes += "わーい勝った勝った〜！またやろうねお兄ちゃん！\n";
-            break;
-          case 2:
-            rep_mes += "あー負けちゃった…！またやろうねお兄ちゃん！\n";
-            break;
-          default:
-            rep_mes = "予期せぬエラーが発生したよ！お兄ちゃん！\n";
-            break;
-        }
-      }
-      message.channel.send(rep_mes);
+      let res = temtan.janken_play(message.content);
+      message.channel.send(res);
     }
     // 天気
     else if(message.content.indexOf("天気") > -1 ){
