@@ -77,33 +77,13 @@
       message.channel.send(rep_mes);
     }
     else if(message.content === "おはなし"){
-      const WordList = [
-        'ねえねえ、好きな食べ物って何？',
-        'どこか外国行ったことある？',
-        '尊敬する人って・・・誰かな～？',
-        'どんなことが趣味なのかなあ？',
-        'どんなことが好きなの？',
-        'す、好きな人って誰かな///',
-        'いつもどれくらい寝てる？',
-        'いちばん大切にしてるものってな～に？',
-        '犬派かな？猫派かな？',
-        '好きなゲームってな～に？',
-        '夢ってなにかな～？',
-        '1番ほしいものってな～に？',
-        'お前も消してやろうか？',
-        'まだ起きてて大丈夫なの？'
-      ];
-      let rnd = Math.floor( Math.random() * WordList.length );
-      temtan.ohanashiFlag = true;
-      temtan.targetUser = message.author.id;
-      message.channel.send(WordList[rnd]);
+      let res = temtan.ohanashi(message.author.id);
+      message.channel.send(res);
     }
     // 相槌を返す
     else if(temtan.ohanashiFlag && temtan.targetUser === message.author.id){
-      let rep_mes = "へぇ〜そうなんだ！";
-      temtan.ohanashiFlag = false;
-      temtan.targetUser = null;
-      message.channel.send(rep_mes);
+      let res = temtan.ohanashi_aizuchi();
+      message.channel.send(res);
     }
     else if(message.content.indexOf("テムたん") > -1 ){
       let rep_mes = "なーに？わたしのこと呼んだー？";
