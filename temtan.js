@@ -26,21 +26,6 @@
     return;
   }
 
-  // PromiseでHTTPリクエストを実施する。
-  function getRequest(getURL){
-    let request = require('request');
-    return new Promise((resolve,reject) => {
-      request(getURL, function (error, response, body) {
-      if(!error && response.statusCode == 200){
-          resolve(body);
-        }
-        else{
-          reject(body);
-        }
-      });
-    });
-  }
-
   // 待受画面
   client.on('ready', ()=>{
     console.log("ログインしました。");
