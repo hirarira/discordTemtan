@@ -1,7 +1,7 @@
 (()=>{
   "use strict"
   const Discord = require('discord.js');
-  const OpenWeatherMap = require('./lib/openWeatherMap.js');
+
   const Mine = require("./lib/mine.js");
   const BlackJack = require("./lib/blackjack.js");
   const Temtan = require("./lib/temtanbot.js");
@@ -11,10 +11,6 @@
   // tokenを環境変数から取得
   const token = process.env.TEMTAN_TOKEN;
 
-  // openWeatherMap
-  const openWeatherMapToken = process.env.OPEN_WEATHER_MAP;
-  let openWeatherMap = new OpenWeatherMap(openWeatherMapToken);
-
   // Minesweepe
   const mine = new Mine();
 
@@ -22,15 +18,14 @@
   const blackjack = new BlackJack(true);
 
   // Temtan
-  const temtan = new Temtan();
+  const temtan = new Temtan(process.env);
+  if(!temtan.status){
+    return;
+  }
 
   // 環境変数が取得できるかの判定
   if(typeof token === 'undefined'){
     console.log("discordのtokenを指定してください");
-    return;
-  }
-  if(typeof openWeatherMapToken === 'undefined'){
-    console.log("openWeatherMapのtokenを指定してください");
     return;
   }
 
@@ -93,33 +88,18 @@
     }
     // 天気
     else if(message.content.indexOf("天気") > -1 ){
-      temtan.isTenkiFlag = true;
-      temtan.targetUser = message.author.id;
-      message.reply("どこの天気を知りたい？");
+      let res = temtan.tenki_start(message.author.id);
+      message.channel.send(res);
     }
     // 天気を返す
     else if(temtan.isTenkiFlag && temtan.targetUser === message.author.id){
-      openWeatherMap.getWeather(message.content)
+      temtan.tenki_get(message.content)
       .then((res)=>{
-        message.reply( openWeatherMap.getWeatherJapanese(res) );
+        message.reply(res);
       })
       .catch((e)=>{
-        let meg = "";
-        switch (e.cod) {
-          case "401":
-            meg = "tokenがおかしいよお・・・";
-            break;
-          case "404":
-            meg = "そんな街無いみたいだよ・・・お兄ちゃん・・・";
-            break;
-          default:
-            meg = "予期せぬエラーが発生したよ！お兄ちゃん！";
-            break;
-        }
-        message.reply( meg );
+        message.reply(e);
       });
-      temtan.isTenkiFlag = false;
-      temtan.targetUser = null;
     }
     // マインスイーパ
     else if(message.content.indexOf("mine") > -1 ){
