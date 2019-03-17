@@ -1,18 +1,12 @@
 (()=>{
   "use strict"
   const Discord = require('discord.js');
-
-
-  const BlackJack = require("./lib/blackjack.js");
   const Temtan = require("./lib/temtanbot.js");
 
   const client = new Discord.Client();
 
   // tokenを環境変数から取得
   const token = process.env.TEMTAN_TOKEN;
-
-  // blackjack
-  const blackjack = new BlackJack(true);
 
   // Temtan
   const temtan = new Temtan(process.env);
@@ -90,57 +84,8 @@
     }
     // BlackJack
     else if (message.content.match(/(bj)|(blackjack)/)){
-      let bj_cmd = message.content.split(" ");
-      if(bj_cmd.length > 1){
-        bj_cmd = bj_cmd[1];
-        let out_str = '';
-        switch (bj_cmd) {
-          case 'start':
-            if(blackjack.end){
-              blackjack.init();
-              while(blackjack.end){
-                out_str += blackjack.end_show();
-                blackjack.init();
-              }
-              out_str += blackjack.show_status();
-              out_str += "\nヒットしますか？ y/n";
-            }
-            else{
-              out_str = "ゲームはすでに始まってますよー\n";
-            }
-            break;
-          case 'status':
-            out_str = blackjack.show_status();
-            out_str += "\nヒットしますか？ y/n";
-            break;
-          case 'y':
-          case 'yes':
-          case 'n':
-          case 'no':
-            if(!blackjack.end){
-              let is_hit = (bj_cmd === 'y' ||bj_cmd === 'yes');
-              blackjack.hit_player(is_hit);
-              if(blackjack.end){
-                out_str += blackjack.end_show();
-              }
-              else{
-                out_str += blackjack.show_status();
-                out_str += "\nヒットしますか？ y/n";
-              }
-            }
-            else{
-              out_str = "ゲームは開始されてません！\n";
-            }
-            break;
-          default:
-            out_str = "BlackJackの正しいコマンドではありませんよー\n" +
-              "bj start: ゲームを開始\n";
-              "bj status: ゲームの状況を表示\n";
-              "bj y/n: hitするかどうかを選択\n";
-            break;
-        }
-        message.channel.send(out_str);
-      }
+      let res = temtan.play_blackjack(message.content);
+      message.channel.send(res);
     }
     // test
     else if(message.content.indexOf("get data") > -1 ){
