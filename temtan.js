@@ -2,7 +2,7 @@
   "use strict"
   const Discord = require('discord.js');
 
-  const Mine = require("./lib/mine.js");
+
   const BlackJack = require("./lib/blackjack.js");
   const Temtan = require("./lib/temtanbot.js");
 
@@ -10,9 +10,6 @@
 
   // tokenを環境変数から取得
   const token = process.env.TEMTAN_TOKEN;
-
-  // Minesweepe
-  const mine = new Mine();
 
   // blackjack
   const blackjack = new BlackJack(true);
@@ -103,28 +100,8 @@
     }
     // マインスイーパ
     else if(message.content.indexOf("mine") > -1 ){
-      let mine_cmd = message.content.split(" ");
-      if(mine_cmd[1] === "show"){
-        let out_str = "```" + JSON.stringify(mine) + "```";
-        message.channel.send(out_str);
-      }
-      else if(mine_cmd[1] === "reset"){
-        let set_num = Number(mine_cmd[2]);
-        let msg = "強制リセットをかけます！\n";
-        msg += mine.start_game(set_num);
-        message.channel.send(msg);
-      }
-      else if(!mine.playing){
-        let set_num = Number(mine_cmd[1]);
-        let msg = mine.start_game(set_num);
-        message.channel.send(msg);
-      }
-      else{
-        let now_msg = mine.open_board(mine_cmd[1], mine_cmd[2]);
-        let board_status = mine.show_board_discord();
-        let out_str = board_status + "\n" + now_msg;
-        message.channel.send(out_str);
-      }
+      let res = temtan.play_mine(message.content);
+      message.channel.send(res);
     }
     // BlackJack
     else if (message.content.match(/(bj)|(blackjack)/)){
