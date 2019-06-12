@@ -35,6 +35,14 @@
       let res = temtan.hello(message.author.username);
       message.channel.send(res);
     }
+    else if(message.content === "UNDO"){
+      let res = temtan.undo();
+      message.channel.send(res);
+    }
+    else if(message.content === "clear"){
+      let res = temtan.clear();
+      message.channel.send(res);
+    }
     else if(message.content === "おはなし"){
       let res = temtan.ohanashi(message.author.id);
       message.channel.send(res);
