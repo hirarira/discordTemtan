@@ -7,3 +7,4 @@ start_temtan_debug.sh
 debug_temtan.sh
 nohup.out
 res.txt
+dockerfiles/node.env
