@@ -5,6 +5,5 @@ start_temtan.sh
 start_temtan_debug.sh
 ./lib/debug/openWeatherMapTest.sh
 debug_temtan.sh
-package-lock.json
 nohup.out
 res.txt
